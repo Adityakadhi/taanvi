@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>A Note For You 💜</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --purple:#7c3aed;--purple-light:#a855f7;--purple-pale:#c084fc;
+  --pink:#ec4899;--pink-light:#f9a8d4;
+  --gold:#fbbf24;--gold-light:#fde68a;
+  --bg:#0d001a;--bg2:#150025;--bg3:rgba(88,28,135,0.25);
+  --border:rgba(168,85,247,0.3);--text:#f0e6ff;--muted:#c4b5fd;
+}
+html,body{min-height:100vh;background:var(--bg)}
+body{font-family:'Quicksand',sans-serif;color:var(--text);overflow-x:hidden}
+
+/* STARS BG */
+#starsBg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.star{position:absolute;background:white;border-radius:50%;animation:twinkle 2s infinite alternate}
+@keyframes twinkle{from{opacity:.15}to{opacity:.9}}
+
+.wrap{position:relative;z-index:1;max-width:520px;margin:0 auto;padding:20px 16px 80px}
+
+/* SCREENS */
+.screen{display:none}.screen.active{display:block}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes floatY{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-14px) rotate(4deg)}}
+@keyframes shimmerBg{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+@keyframes pop{0%{transform:scale(0) rotate(-12deg);opacity:0}70%{transform:scale(1.12) rotate(2deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes heartbeat{0%,100%{transform:scale(1)}30%{transform:scale(1.15)}60%{transform:scale(1.08)}}
+@keyframes glowBorder{0%,100%{box-shadow:0 0 8px rgba(168,85,247,.3)}50%{box-shadow:0 0 22px rgba(168,85,247,.7)}}
+@keyframes confettiDrop{0%{transform:translateY(-10px) rotate(0);opacity:1}100%{transform:translateY(90vh) rotate(720deg);opacity:0}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:translateX(0)}}
+
+/* HEADER */
+.big-heart{font-size:clamp(3rem,10vw,4.5rem);text-align:center;display:block;animation:floatY 3s ease-in-out infinite;margin:10px 0}
+.title-glow{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.6rem,6vw,2.2rem);text-align:center;background:linear-gradient(90deg,#ffd700,#ff69b4,#da70d6,#9b59b6,#ffd700);background-size:300% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmerBg 4s linear infinite;margin-bottom:6px;line-height:1.3}
+.subtitle{text-align:center;color:var(--muted);font-size:clamp(0.8rem,3vw,0.92rem);margin-bottom:20px}
+
+/* PROGRESS */
+.prog-wrap{display:flex;align-items:center;gap:6px;justify-content:center;margin-bottom:20px;padding:0 4px}
+.pdot{width:clamp(28px,8vw,36px);height:clamp(28px,8vw,36px);border-radius:50%;border:2px solid rgba(192,132,252,.25);display:flex;align-items:center;justify-content:center;font-size:clamp(0.7rem,2.5vw,0.85rem);color:rgba(192,132,252,.4);transition:all .4s;flex-shrink:0}
+.pdot.done{background:var(--purple);border-color:var(--purple-light);color:#fff}
+.pdot.active{background:rgba(168,85,247,.2);border-color:var(--purple-pale);color:var(--text);animation:glowBorder 2s infinite}
+.pline{flex:1;height:2px;background:rgba(192,132,252,.15);border-radius:2px;max-width:36px;transition:background .4s}
+.pline.done{background:var(--purple)}
+
+/* SCORE */
+.score-row{display:flex;gap:8px;justify-content:center;margin-bottom:18px;flex-wrap:wrap}
+.score-pill{background:rgba(88,28,135,.35);border:1px solid var(--border);border-radius:50px;padding:6px 14px;font-size:clamp(0.75rem,2.8vw,0.85rem);font-weight:700;color:#e9d5ff}
+.score-pill span{color:var(--gold)}
+
+/* CARDS */
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:18px;padding:clamp(16px,4vw,22px);margin-bottom:14px;animation:fadeUp .5s ease both}
+.card-tag{font-size:clamp(0.68rem,2.5vw,0.75rem);color:var(--pink-light);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+.card-intro{color:#ddd6fe;font-size:clamp(0.82rem,3vw,0.92rem);line-height:1.7;margin-bottom:14px}
+
+/* INPUTS */
+label.lbl{display:block;font-size:clamp(0.78rem,2.8vw,0.84rem);color:var(--muted);margin-bottom:7px;font-weight:600}
+.inp{width:100%;background:rgba(30,0,60,.6);border:1.5px solid rgba(168,85,247,.35);border-radius:12px;padding:13px 16px;color:var(--text);font-size:clamp(0.88rem,3vw,1rem);font-family:'Quicksand',sans-serif;outline:none;transition:border-color .2s}
+.inp:focus{border-color:var(--purple-light)}
+.inp::placeholder{color:rgba(196,181,253,.45)}
+.err{color:#f87171;font-size:0.78rem;margin-top:5px;display:none}
+
+/* BUTTONS */
+.btn{background:linear-gradient(135deg,#7c3aed,#a855f7,#ec4899);border:none;border-radius:50px;padding:clamp(11px,3vw,14px) clamp(24px,6vw,36px);color:#fff;font-size:clamp(0.88rem,3.2vw,1rem);font-weight:700;cursor:pointer;font-family:'Quicksand',sans-serif;transition:transform .2s;display:block;margin:12px auto 0;animation:glowBorder 3s infinite}
+.btn:hover{transform:scale(1.04)}
+.btn:active{transform:scale(0.97)}
+.btn-ghost{background:transparent;border:1.5px solid rgba(168,85,247,.4);border-radius:50px;padding:10px 22px;color:var(--muted);font-size:clamp(0.8rem,3vw,0.88rem);font-weight:700;cursor:pointer;font-family:'Quicksand',sans-serif;transition:all .2s;display:block;margin:10px auto 0}
+.btn-ghost:hover{background:rgba(139,92,246,.2);color:#fff}
+
+.name-hi{font-family:'Playfair Display',serif;font-style:italic;color:#f0abfc}
+
+/* TRAIT GRID */
+.trait-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.chip{background:rgba(88,28,135,.3);border:1.5px solid rgba(168,85,247,.25);border-radius:11px;padding:10px 5px;text-align:center;cursor:pointer;transition:all .2s;font-size:clamp(0.7rem,2.5vw,0.78rem);color:#ddd6fe;font-weight:700;line-height:1.4}
+.chip:hover{background:rgba(139,92,246,.35);border-color:var(--purple-light);transform:translateY(-2px)}
+.chip.picked{background:rgba(168,85,247,.4);border-color:#e879f9;color:#f5d0fe;animation:pop .4s ease}
+.chip .ce{font-size:clamp(1.2rem,4vw,1.5rem);display:block;margin-bottom:4px}
+.chip-fb{font-size:clamp(0.75rem,2.8vw,0.82rem);color:var(--gold-light);min-height:18px;margin-top:8px;text-align:center;font-weight:600}
+
+/* QUIZ */
+.quiz-q{font-size:clamp(0.88rem,3.2vw,1rem);font-weight:700;color:var(--text);margin-bottom:14px;line-height:1.55}
+.quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.qbtn{background:rgba(88,28,135,.3);border:1.5px solid rgba(168,85,247,.28);border-radius:11px;padding:clamp(10px,3vw,13px) 8px;color:#ddd6fe;font-size:clamp(0.75rem,2.8vw,0.84rem);font-weight:700;cursor:pointer;transition:all .2s;font-family:'Quicksand',sans-serif;line-height:1.4}
+.qbtn:hover:not(:disabled){background:rgba(139,92,246,.35);transform:scale(1.02)}
+.qbtn.correct{background:rgba(52,211,153,.2);border-color:#34d399;color:#a7f3d0}
+.qbtn.wrong{background:rgba(239,68,68,.15);border-color:#f87171;color:#fca5a5}
+.qfb{margin-top:11px;font-size:clamp(0.78rem,2.8vw,0.85rem);color:var(--gold-light);font-weight:700;min-height:18px;text-align:center;line-height:1.5}
+.qdots{display:flex;gap:6px;justify-content:center;margin-bottom:12px}
+.qdot{width:8px;height:8px;border-radius:50%;background:rgba(139,92,246,.25);border:1px solid rgba(168,85,247,.3);transition:all .3s}
+.qdot.done{background:var(--purple-light);border-color:#d8b4fe}
+.qdot.cur{background:var(--gold);border-color:var(--gold-light);transform:scale(1.3)}
+
+/* LOCKS */
+.lock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:12px 0}
+.lock-box{background:rgba(60,20,100,.4);border:1.5px solid rgba(168,85,247,.28);border-radius:13px;padding:clamp(12px,3vw,16px) 7px;text-align:center;cursor:pointer;transition:all .3s}
+.lock-box:hover{background:rgba(100,40,160,.4);border-color:var(--purple-light);transform:translateY(-3px)}
+.lock-box.opened{border-color:var(--gold);background:rgba(251,191,36,.07);cursor:default;transform:none!important}
+.le{font-size:clamp(1.5rem,5vw,2rem);display:block;margin-bottom:4px}
+.ll{font-size:clamp(0.65rem,2.3vw,0.72rem);color:var(--muted);font-weight:700;line-height:1.3}
+.lpts{font-size:0.68rem;color:var(--gold);font-weight:700;margin-top:4px;display:none}
+
+/* REVEAL */
+.reveal{background:rgba(60,20,100,.5);border-left:3px solid var(--purple-light);border-radius:0 13px 13px 0;padding:clamp(13px,3.5vw,18px);margin-bottom:12px;animation:slideIn .5s ease both}
+.reveal .rtag{font-size:0.7rem;color:var(--purple-pale);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+.reveal .remoji{font-size:clamp(1.4rem,5vw,1.9rem);float:right;margin-left:10px;animation:floatY 2.5s ease-in-out infinite}
+.reveal p{color:#ede9fe;font-size:clamp(0.82rem,3vw,0.9rem);line-height:1.72}
+
+/* FLIRT QUESTIONS */
+.flirt-card{background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(236,72,153,.12));border:1.5px solid rgba(236,72,153,.35);border-radius:18px;padding:clamp(16px,4vw,22px);margin-bottom:14px;animation:fadeUp .5s ease both;text-align:center}
+.flirt-emoji{font-size:clamp(2rem,7vw,3rem);display:block;margin-bottom:10px;animation:heartbeat 1.5s ease-in-out infinite}
+.flirt-q{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1rem,3.8vw,1.2rem);color:#fce7f3;margin-bottom:16px;line-height:1.5}
+.flirt-opts{display:flex;flex-direction:column;gap:9px}
+.fbtn{background:rgba(236,72,153,.12);border:1.5px solid rgba(236,72,153,.3);border-radius:12px;padding:clamp(10px,3vw,13px) 16px;color:#fce7f3;font-size:clamp(0.8rem,3vw,0.88rem);font-weight:700;cursor:pointer;transition:all .2s;font-family:'Quicksand',sans-serif;text-align:left}
+.fbtn:hover:not(:disabled){background:rgba(236,72,153,.25);border-color:#f472b6;transform:translateX(4px)}
+.fbtn.fpicked{background:rgba(236,72,153,.28);border-color:#f9a8d4;color:#fff}
+.flirt-reply{margin-top:12px;font-size:clamp(0.8rem,3vw,0.88rem);color:var(--gold-light);font-weight:700;min-height:18px;font-style:italic;text-align:center;padding:8px 12px;background:rgba(251,191,36,.08);border-radius:10px;display:none}
+
+/* HEART TAP */
+.heartometer{text-align:center;margin:14px 0}
+.hm-label{font-size:0.82rem;color:var(--muted);margin-bottom:8px;font-weight:600}
+.hm-bar{width:100%;height:14px;background:rgba(88,28,135,.4);border-radius:50px;overflow:hidden}
+.hm-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#ec4899,#fbbf24);border-radius:50px;transition:width .8s cubic-bezier(.22,1,.36,1);width:0}
+.hm-pct{font-size:1.25rem;font-weight:700;color:var(--pink-light);margin-top:7px}
+.heart-tap-wrap{text-align:center;margin:18px 0;cursor:pointer;user-select:none;-webkit-user-select:none}
+.heart-tap-wrap svg{transition:transform .1s}
+.heart-tap-wrap:active svg{transform:scale(0.9)}
+.tap-msg{font-size:clamp(0.82rem,3vw,0.9rem);color:var(--gold-light);font-weight:700;min-height:22px;margin-top:8px;font-style:italic}
+
+/* METER */
+.meter-wrap{margin:14px 0}
+.meter-label{display:flex;justify-content:space-between;font-size:0.8rem;color:var(--muted);margin-bottom:6px;font-weight:600}
+.meter-bar{height:9px;background:rgba(88,28,135,.4);border-radius:50px;overflow:hidden}
+.meter-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--pink));border-radius:50px;transition:width .8s cubic-bezier(.22,1,.36,1);width:0}
+
+/* FINAL */
+.final-title{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.5rem,5.5vw,2rem);background:linear-gradient(90deg,var(--gold-light),var(--pink-light),var(--purple-pale));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;margin-bottom:10px;line-height:1.35}
+.letter-box{background:rgba(60,20,100,.5);border:1px solid rgba(168,85,247,.4);border-radius:16px;padding:clamp(18px,4.5vw,26px);margin:14px 0;font-family:'Playfair Display',serif;font-style:italic;line-height:1.85;color:#ede9fe;font-size:clamp(0.88rem,3vw,0.96rem)}
+.letter-sign{text-align:right;color:var(--pink-light);margin-top:14px;font-size:clamp(0.95rem,3.5vw,1.1rem)}
+.confetti-area{position:relative;height:0;overflow:visible}
+.cf{position:absolute;width:8px;height:8px;border-radius:2px;pointer-events:none;animation:confettiDrop 2.5s linear forwards}
+
+/* RESPONSIVE HELPERS */
+@media(max-width:380px){
+  .trait-grid,.quiz-opts{grid-template-columns:1fr 1fr}
+  .lock-grid{grid-template-columns:repeat(3,1fr)}
+  .score-row{gap:6px}
+}
+</style>
+</head>
+<body>
+<div id="starsBg"></div>
+<div class="wrap">
+
+<!-- SCREEN 0: WELCOME -->
+<div class="screen active" id="s0">
+  <div class="big-heart">💜</div>
+  <div class="title-glow">A Note Just for You</div>
+  <p class="subtitle">An adventure made with a lot of feelings ✨</p>
+  <div class="card">
+    <p class="card-intro">Hey gorgeous 🌸 Before anything else — type your name below. Every single word of this was written just for <em>you</em>.</p>
+    <label class="lbl" for="nameInp">Your name, beautiful</label>
+    <input class="inp" id="nameInp" placeholder="Type your name..." maxlength="20" autocomplete="off"/>
+    <p class="err" id="nameErr">Don't be shy, come on 😊</p>
+    <button class="btn" onclick="startGame()">Begin My Story 💌</button>
+  </div>
+</div>
+
+<!-- SCREEN 1: GAME -->
+<div class="screen" id="s1">
+  <div id="progBar"></div>
+  <div class="score-row">
+    <div class="score-pill">⭐ <span id="sc">0</span> stars</div>
+    <div class="score-pill">💜 <span id="hpct">0</span>% lovemeter</div>
+  </div>
+
+  <!-- PHASE 1: WHO ARE YOU -->
+  <div class="screen active" id="ph1">
+    <div class="card">
+      <div class="card-tag">Chapter 1 — Who are you right now?</div>
+      <p class="card-intro">Hello, <span class="name-hi nd1"></span> 🌸 Before I tell you what's been on my mind, let me understand your world a little...</p>
+      <label class="lbl">Your current vibe?</label>
+      <div class="trait-grid" id="vibeGrid"></div>
+      <div class="chip-fb" id="vibeFb"></div>
+    </div>
+    <div class="card">
+      <label class="lbl">What are you craving right now?</label>
+      <div class="trait-grid" id="cravingGrid"></div>
+      <div class="chip-fb" id="cravingFb"></div>
+    </div>
+    <button class="btn" id="ph1btn" style="display:none" onclick="goPhase(2)">Next Chapter →</button>
+  </div>
+
+  <!-- PHASE 2: QUIZ -->
+  <div class="screen" id="ph2">
+    <div class="card">
+      <div class="card-tag">Chapter 2 — The Quiz of Us</div>
+      <p class="card-intro">Let's see how well <span class="name-hi nd2"></span> knows herself — and maybe someone who thinks about her a little too much 😏</p>
+      <div class="qdots" id="qdots"></div>
+      <div id="quizArea"></div>
+    </div>
+    <button class="btn-ghost" id="qnext" style="display:none" onclick="nextQ()">Next →</button>
+    <button class="btn" id="qdone" style="display:none" onclick="goPhase(3)">See My Confessions 🔐</button>
+  </div>
+
+  <!-- PHASE 3: CONFESSIONS -->
+  <div class="screen" id="ph3">
+    <div class="card">
+      <div class="card-tag">Chapter 3 — Things I Never Said</div>
+      <p class="card-intro">Tap each lock, <span class="name-hi nd3"></span>... every one hides something I've been keeping for you 🔐</p>
+      <div class="lock-grid" id="lockGrid"></div>
+    </div>
+    <div id="revealArea"></div>
+    <button class="btn" id="ph3btn" style="display:none" onclick="goPhase(4)">Now the Flirty Part 😏</button>
+  </div>
+
+  <!-- PHASE 4: FLIRT QUESTIONS -->
+  <div class="screen" id="ph4">
+    <div class="card" style="text-align:center">
+      <div class="card-tag" style="text-align:center">Chapter 4 — Just Between Us</div>
+      <p class="card-intro" style="text-align:center">A few honest questions, <span class="name-hi nd4"></span>... no judgment, only feelings 🌸</p>
+    </div>
+    <div id="flirtArea"></div>
+    <button class="btn" id="ph4btn" style="display:none" onclick="goPhase(5)">Fill My Heart ❤️</button>
+  </div>
+
+  <!-- PHASE 5: HEART TAP -->
+  <div class="screen" id="ph5">
+    <div class="card" style="text-align:center">
+      <div class="card-tag" style="text-align:center">Chapter 5 — Fill My Heart</div>
+      <p class="card-intro" style="text-align:center">Tap the heart as many times as you want, <span class="name-hi nd5"></span> 💜 Every tap tells me something...</p>
+      <div class="heartometer">
+        <div class="hm-label">Our Lovemeter</div>
+        <div class="hm-bar"><div class="hm-fill" id="lmFill"></div></div>
+        <div class="hm-pct" id="lmPct">0%</div>
+      </div>
+      <div class="heart-tap-wrap" onclick="tapHeart()">
+        <svg id="heartSvg" width="120" height="110" viewBox="0 0 120 110">
+          <path id="hpath" d="M60 95 C60 95 8 60 8 32 C8 14 22 3 36 3 C46 3 54 9 60 19 C66 9 74 3 84 3 C98 3 112 14 112 32 C112 60 60 95 60 95Z" fill="#7c3aed" stroke="#c084fc" stroke-width="2.5"/>
+        </svg>
+        <div class="tap-msg" id="tapMsg">Tap me 💜</div>
+      </div>
+    </div>
+    <div id="ph5extra" style="display:none">
+      <div class="card">
+        <label class="lbl">One last thing — honestly, how do you feel right now?</label>
+        <div class="trait-grid" id="feelGrid"></div>
+        <div class="chip-fb" id="feelFb"></div>
+      </div>
+      <button class="btn" id="ph5btn" style="display:none" onclick="goFinal()">See the Grand Finale 🌸</button>
+    </div>
+  </div>
+
+  <!-- FINAL -->
+  <div class="screen" id="final">
+    <div class="confetti-area" id="cfArea"></div>
+    <div class="big-heart" style="font-size:3rem">💜</div>
+    <div class="final-title" id="finalTitle"></div>
+    <div class="score-row" style="margin-top:8px">
+      <div class="score-pill">⭐ <span id="finalSc"></span> stars collected</div>
+      <div class="score-pill" id="finalMatch"></div>
+    </div>
+    <div class="letter-box" id="letterBox"></div>
+    <div class="card" style="text-align:center;margin-top:8px">
+      <p style="font-size:0.78rem;color:var(--muted);margin-bottom:6px">Your vibe said it all:</p>
+      <p id="finalVibeMsg" style="font-size:0.92rem;color:var(--gold-light);font-weight:700;font-style:italic;line-height:1.5"></p>
+    </div>
+    <button class="btn" onclick="restart()" style="margin-top:10px">Play Again 🔄</button>
+  </div>
+
+</div><!-- end s1 -->
+</div><!-- end wrap -->
+
+<script>
+// STATE
+let uname='',stars=0,hp=0,lmV=0,htaps=0;
+let vibePicked=false,cravPicked=false,feelPicked=false;
+let pickedVibe='',pickedFeel='';
+let curQ=0,qAns=false;
+let locksOpen=0;
+let flirtDone=0;
+const TOTAL_FLIRT=3;
+
+// DATA
+const vibes=[
+  {e:'😒',l:'A bit upset'},{e:'🥺',l:'Soft & sad'},
+  {e:'😌',l:'Calm & chill'},{e:'💅',l:'Unbothered'},
+  {e:'🤭',l:'Secretly smiling'},{e:'🌸',l:'Feeling pretty'}
+];
+const vibeFbs=['Aw... let me fix that 💜','That softness is everything 🥺','Good. This will make it better 😊','I will shake that up 😏','I knew it! That little smile 🌸','You always do. You always are 💛'];
+
+const cravings=[
+  {e:'☕',l:'Hot chai'},{e:'🍣',l:'Sushi'},
+  {e:'🥤',l:'Diet Coke'},{e:'🧸',l:'A big hug'},
+  {e:'🌸',l:'Flowers'},{e:'💬',l:'A good talk'}
+];
+const cravFbs=[
+  'Chai girl 🍵 I\'d make you the perfect cup right now',
+  'Sushi it is — I\'m already planning our date 🍣',
+  'Diet Coke queen 🥤 I\'d keep your fridge stocked',
+  'Come here then... I give really good ones 🤭',
+  'Should\'ve brought you lilies already 🌸',
+  'I\'m here. I\'m listening. Always 💜'
+];
+
+const quizQs=[
+  {q:'Your fav flower is?',opts:['Roses 🌹','Lilies 🌸','Sunflowers 🌻','Daisies 🌼'],c:1,fb:'Lilies — just like I\'d always pick you 🌸 +10 stars!'},
+  {q:'Your power color is?',opts:['Red 🔴','Blue 💙','Purple 💜','Pink 🩷'],c:2,fb:'Purple forever. It\'s literally your whole soul 💜 +10 stars!'},
+  {q:'Best comfort drink?',opts:['Coffee ☕','Chai 🍵','Diet Coke 🥤','Juice 🧃'],c:2,fb:'Diet Coke and chai — you\'re a woman of culture 😌 +10 stars!... wait pick chai next time too 😂'},
+  {q:'Dream date scenario?',opts:['Fancy restaurant','Sushi + long talks 🍣','Home movie night','Rooftop stargazing'],c:1,fb:'Sushi and long conversations. That\'s my fantasy too. With you. 🍣 +10 stars!'},
+  {q:'Your comfort show?',opts:['Friends','TMKOC 📺','Scam 1992','Money Heist'],c:1,fb:'Tarak Mehta Ka Ooltah Chashmah 😄 I\'d watch every episode beside you! +10 stars!'},
+];
+
+const confessions=[
+  {e:'🌸',s:'The Lily Thing',t:'Every lily I see makes me think of you. I walked past a flower shop once just because they had lilies in the window — it felt like the universe reminding me of you.'},
+  {e:'💛',s:'You in yellow',t:'The last time I saw you in yellow, I completely lost my train of thought mid-sentence. You have no idea how unfair that is. You look incredible in it.'},
+  {e:'🍣',s:'The Sushi Excuse',t:'Every time I suggested sushi, it was really just an excuse to sit across from you for longer. I don\'t even care about the food. It was always about you.'},
+  {e:'☕',s:'Your Chai Order',t:'I know exactly how you take your chai. Without you telling me. That\'s what happens when someone matters to you — you just... remember everything.'},
+  {e:'📺',s:'TMKOC Confession',t:'I watched a few TMKOC episodes just so I\'d have something to talk to you about. That\'s how deep this has gone. Embarrassing? Yes. Worth it? Completely.'},
+  {e:'💜',s:'Purple is Yours',t:'I can\'t see purple anymore without thinking of you. You\'ve ruined an entire color for me. I see it and I smile like an idiot. I love that you did that.'},
+];
+
+const flirtQs=[
+  {
+    e:'🌙',
+    q:'If we were watching TMKOC at midnight and you fell asleep on my shoulder — would you pretend to be asleep or actually sleep?',
+    opts:['Actually sleep 😴','Pretend to sleep 🤭','Stay awake but not move 🥺','I wouldn\'t let it happen 💅'],
+    reps:['That\'s honestly the sweetest thing 🥺 I wouldn\'t move either','You sneaky thing 🤭 I love that honesty so much','Okay but your heart would be racing and we both know it 😏','Sure you wouldn\'t 😏 That shoulder offer stands forever 💜']
+  },
+  {
+    e:'💌',
+    q:'If I wrote you a handwritten letter and left it somewhere you\'d find it — would you tell me you found it or secretly keep it?',
+    opts:['Tell you immediately 💌','Keep it secret 🤫','Read it 100 times then tell you 🥺','Frame it and never admit it 😂'],
+    reps:['I love that you\'d tell me 💜 I\'d write you one every week','A secret keeper 🤫 I bet you\'d reread it every night too','100 times... and somehow I\'d still want to write more 🌸','Framed?! Okay I\'m genuinely flustered right now 😭💜']
+  },
+  {
+    e:'🌸',
+    q:'If I showed up at your door with fresh chai and lilies for no reason — what\'s your honest first reaction?',
+    opts:['Scream internally 🥺','Pull you inside immediately 🚪','Pretend to be annoyed but smile 😏','Cry a little honestly 😭'],
+    reps:['Internal screaming is the correct response, I\'d probably be doing the same 🥺','I would LOVE to come inside 💜','That smile gives everything away. I\'d see right through you 😏','If you cried I would be DONE. Just done. You\'re everything 😭💜']
+  }
+];
+
+const tapMsgs=['Tap me 💜','Keep going... 🌸','Yes, just like that... 💜','You\'re making my heart race 😏','More... please? 🥺','Okay I\'m melting 💜','You\'re too cute doing this 🌸','My heart can\'t handle you 😭','Stop... but don\'t stop 😏','I\'m completely yours 💜'];
+
+const feels=[
+  {e:'🥰',l:'Feeling loved'},{e:'😊',l:'Happy now'},
+  {e:'🤍',l:'I forgive you'},{e:'💜',l:'Soft for you'},
+  {e:'😏',l:'A little flattered'},{e:'☺️',l:'Shy honestly'}
+];
+const feelReps=[
+  'That\'s all I ever wanted 🥰',
+  'Making you happy is my favorite thing 😊',
+  'Thank you. I\'ll spend forever making it up to you 🤍',
+  'That softness of yours is literally my favorite thing 💜',
+  'Flattered looks really good on you 😏',
+  'You being shy around me is the cutest thing on earth ☺️'
+];
+
+// UTILS
+function addStars(n){stars+=n;hp=Math.min(100,hp+n/2);document.getElementById('sc').textContent=stars;document.getElementById('hpct').textContent=Math.round(hp);}
+function setNames(){document.querySelectorAll('.name-hi').forEach(el=>el.textContent=uname);}
+
+function buildStars(){
+  const c=document.getElementById('starsBg');
+  for(let i=0;i<55;i++){
+    const s=document.createElement('div');s.className='star';
+    const sz=Math.random()*2.5+0.8;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${1.5+Math.random()*2.5}s`;
+    c.appendChild(s);
+  }
+}
+
+function buildProg(){
+  const steps=['💜','🧠','🔐','😏','❤️','🌸'];
+  let h='<div class="prog-wrap">';
+  steps.forEach((s,i)=>{
+    if(i>0)h+=`<div class="pline" id="pl${i}"></div>`;
+    h+=`<div class="pdot" id="pd${i}">${s}</div>`;
+  });
+  document.getElementById('progBar').innerHTML=h+'</div>';
+}
+
+function updateProg(a){
+  for(let i=0;i<6;i++){
+    const d=document.getElementById('pd'+i);if(!d)continue;
+    d.className='pdot'+(i<a?' done':i===a?' active':'');
+    if(i>0){const l=document.getElementById('pl'+i);if(l)l.className='pline'+(i<=a?' done':'');}
+  }
+}
+
+function startGame(){
+  const v=document.getElementById('nameInp').value.trim();
+  if(!v){document.getElementById('nameErr').style.display='block';return;}
+  uname=v;
+  document.getElementById('nameErr').style.display='none';
+  document.getElementById('s0').classList.remove('active');
+  document.getElementById('s1').classList.add('active');
+  buildProg();updateProg(0);
+  setNames();
+  buildVibeGrid();buildCravingGrid();
+  goPhase(1);
+}
+
+function buildChipGrid(data,gid,onPick){
+  const g=document.getElementById(gid);g.innerHTML='';
+  data.forEach((item,i)=>{
+    const d=document.createElement('div');d.className='chip';
+    d.innerHTML=`<span class="ce">${item.e}</span>${item.l}`;
+    d.onclick=()=>onPick(i,d);
+    g.appendChild(d);
+  });
+}
+
+function buildVibeGrid(){
+  buildChipGrid(vibes,'vibeGrid',(i,el)=>{
+    if(vibePicked)return;vibePicked=true;el.classList.add('picked');
+    pickedVibe=vibes[i].l;
+    document.getElementById('vibeFb').textContent=vibeFbs[i];
+    addStars(5);checkPh1();
+  });
+}
+function buildCravingGrid(){
+  buildChipGrid(cravings,'cravingGrid',(i,el)=>{
+    if(cravPicked)return;cravPicked=true;el.classList.add('picked');
+    document.getElementById('cravingFb').textContent=cravFbs[i];
+    addStars(5);checkPh1();
+  });
+}
+function checkPh1(){if(vibePicked&&cravPicked)document.getElementById('ph1btn').style.display='block';}
+
+function buildQdots(){
+  const c=document.getElementById('qdots');c.innerHTML='';
+  quizQs.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='qdot'+(i<curQ?' done':i===curQ?' cur':'');
+    c.appendChild(d);
+  });
+}
+function renderQ(){
+  qAns=false;
+  buildQdots();
+  const q=quizQs[curQ];
+  document.getElementById('quizArea').innerHTML=`<div class="quiz-q">Q${curQ+1}. ${q.q}</div><div class="quiz-opts">${q.opts.map((o,i)=>`<button class="qbtn" onclick="ansQ(${i})">${o}</button>`).join('')}</div><div class="qfb" id="qfb"></div>`;
+  document.getElementById('qnext').style.display='none';document.getElementById('qdone').style.display='none';
+}
+function ansQ(idx){
+  if(qAns)return;qAns=true;
+  const q=quizQs[curQ];
+  document.querySelectorAll('.qbtn').forEach((b,i)=>{b.disabled=true;if(i===q.c)b.classList.add('correct');else if(i===idx&&idx!==q.c)b.classList.add('wrong');});
+  document.getElementById('qfb').textContent=idx===q.c?q.fb:'Not quite — but that makes you even more interesting to me 🥺 +3 stars!';
+  addStars(idx===q.c?10:3);
+  if(curQ<quizQs.length-1)document.getElementById('qnext').style.display='block';
+  else document.getElementById('qdone').style.display='block';
+}
+function nextQ(){curQ++;renderQ();}
+
+function buildLocks(){
+  const g=document.getElementById('lockGrid');g.innerHTML='';locksOpen=0;
+  confessions.forEach((c,i)=>{
+    const d=document.createElement('div');d.className='lock-box';
+    d.innerHTML=`<span class="le">🔒</span><div class="ll">${c.s}</div><div class="lpts" id="lp${i}">+10 ⭐</div>`;
+    d.onclick=()=>openLock(i,d,c);
+    g.appendChild(d);
+  });
+}
+function openLock(i,el,c){
+  if(el.classList.contains('opened'))return;
+  el.classList.add('opened');el.querySelector('.le').textContent='💜';
+  el.querySelector(`#lp${i}`).style.display='block';
+  addStars(10);
+  const div=document.createElement('div');div.className='reveal';div.style.animationDelay=(locksOpen*0.1)+'s';
+  div.innerHTML=`<div class="rtag">Confession ${locksOpen+1}</div><span class="remoji">${c.e}</span><p>${c.t}</p>`;
+  document.getElementById('revealArea').appendChild(div);
+  locksOpen++;
+  if(locksOpen>=4)document.getElementById('ph3btn').style.display='block';
+}
+
+function buildFlirt(){
+  flirtDone=0;
+  const area=document.getElementById('flirtArea');area.innerHTML='';
+  flirtQs.forEach((q,qi)=>{
+    const div=document.createElement('div');div.className='flirt-card';div.style.animationDelay=(qi*0.1)+'s';
+    div.innerHTML=`<span class="flirt-emoji">${q.e}</span><div class="flirt-q">${q.q}</div><div class="flirt-opts">${q.opts.map((o,i)=>`<button class="fbtn" onclick="ansFlirt(${qi},${i},this)">${o}</button>`).join('')}</div><div class="flirt-reply" id="fr${qi}"></div>`;
+    area.appendChild(div);
+  });
+}
+function ansFlirt(qi,oi,el){
+  const card=el.closest('.flirt-card');
+  if(card.dataset.ans)return;
+  card.dataset.ans='1';
+  card.querySelectorAll('.fbtn').forEach(b=>{b.disabled=true;});
+  el.classList.add('fpicked');
+  const rep=document.getElementById('fr'+qi);
+  rep.textContent=flirtQs[qi].reps[oi];rep.style.display='block';
+  addStars(8);flirtDone++;
+  if(flirtDone>=TOTAL_FLIRT)document.getElementById('ph4btn').style.display='block';
+}
+
+let lmVal=0;
+function tapHeart(){
+  htaps++;lmVal=Math.min(100,lmVal+5);
+  document.getElementById('lmFill').style.width=lmVal+'%';
+  document.getElementById('lmPct').textContent=Math.round(lmVal)+'%';
+  const path=document.getElementById('hpath');
+  path.setAttribute('fill',lmVal>70?'#ec4899':lmVal>40?'#a855f7':'#7c3aed');
+  path.setAttribute('stroke',lmVal>70?'#f9a8d4':'#c084fc');
+  const idx=Math.min(htaps-1,tapMsgs.length-1);
+  document.getElementById('tapMsg').textContent=tapMsgs[idx];
+  addStars(2);
+  if(htaps>=8&&document.getElementById('ph5extra').style.display==='none'){
+    document.getElementById('ph5extra').style.display='block';
+    buildChipGrid(feels,'feelGrid',(i,el)=>{
+      if(feelPicked)return;feelPicked=true;el.classList.add('picked');
+      pickedFeel=feels[i].l;
+      document.getElementById('feelFb').textContent=feelReps[i];
+      addStars(10);document.getElementById('ph5btn').style.display='block';
+    });
+  }
+}
+
+function goPhase(n){
+  document.querySelectorAll('#s1 .screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('ph'+n).classList.add('active');
+  updateProg(n-1);
+  if(n===2){curQ=0;renderQ();}
+  if(n===3)buildLocks();
+  if(n===4)buildFlirt();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function goFinal(){
+  document.querySelectorAll('#s1 .screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('final').classList.add('active');
+  updateProg(5);
+  const match=Math.min(100,Math.round(hp+lmVal/3));
+  document.getElementById('finalSc').textContent=stars;
+  document.getElementById('finalMatch').innerHTML=`💜 ${match}% lovemeter`;
+  document.getElementById('finalTitle').textContent=`${uname}, you broke my heart wide open.`;
+  const vibeMap={
+    'A bit upset':'even when you\'re upset, you\'re still my favorite person on this entire planet',
+    'Soft & sad':'that softness of yours is the most beautiful thing I\'ve ever been allowed near',
+    'Calm & chill':'your calm energy is the most magnetic thing I\'ve ever encountered',
+    'Unbothered':'you were giving unbothered queen energy the whole time and I was completely gone',
+    'Secretly smiling':'that secret smile — I would do absolutely anything to be the reason for it every day',
+    'Feeling pretty':'you\'re not just pretty. you\'re the kind of beautiful that makes people forget what they were saying'
+  };
+  document.getElementById('finalVibeMsg').textContent=vibeMap[pickedVibe]||'you are genuinely everything';
+  document.getElementById('letterBox').innerHTML=`Dear ${uname},<br><br>
+I made this because words felt too small but I needed you to feel them anyway. You mean more to me than sushi dates, TMKOC marathons, chai at midnight, and Diet Coke runs — though those are perfect excuses to be near you.<br><br>
+You look incredible in yellow. Purple was made for your soul. And every lily I see will forever be yours.<br><br>
+I'm sorry for making you sad. But I'm even sorrier for not saying all of this sooner. You deserve to hear it every single day.<br><br>
+<div class="letter-sign">Yours — if you'll ever let me 💜</div>`;
+  launchConfetti();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function launchConfetti(){
+  const colors=['#a855f7','#fbbf24','#ec4899','#34d399','#c084fc','#f9a8d4','#fde68a'];
+  const a=document.getElementById('cfArea');
+  for(let i=0;i<60;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div');el.className='cf';
+      el.style.cssText=`left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${1.8+Math.random()*1.5}s;border-radius:${Math.random()>.5?'50%':'2px'}`;
+      a.appendChild(el);setTimeout(()=>el.remove(),3500);
+    },i*35);
+  }
+}
+
+function restart(){
+  uname='';stars=0;hp=0;lmVal=0;htaps=0;
+  vibePicked=false;cravPicked=false;feelPicked=false;
+  pickedVibe='';pickedFeel='';curQ=0;qAns=false;
+  locksOpen=0;flirtDone=0;
+  document.getElementById('s1').classList.remove('active');
+  document.getElementById('s0').classList.add('active');
+  document.getElementById('nameInp').value='';
+  document.getElementById('revealArea').innerHTML='';
+  document.getElementById('ph1btn').style.display='none';
+  document.getElementById('ph3btn').style.display='none';
+  document.getElementById('ph4btn').style.display='none';
+  document.getElementById('ph5extra').style.display='none';
+  document.getElementById('ph5btn').style.display='none';
+  document.getElementById('lmFill').style.width='0%';
+  document.getElementById('lmPct').textContent='0%';
+  document.getElementById('tapMsg').textContent='Tap me 💜';
+  document.getElementById('hpath').setAttribute('fill','#7c3aed');
+  document.getElementById('sc').textContent='0';
+  document.getElementById('hpct').textContent='0';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+buildStars();
+document.getElementById('nameInp').addEventListener('keydown',e=>{if(e.key==='Enter')startGame();});
+</script>
+</body>
+</html>
